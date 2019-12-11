@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Persistence;    
+using Persistence;
 
 namespace API
 {
@@ -25,6 +25,14 @@ namespace API
             {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("cors",
+                builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                });
+            });
             services.AddControllers();
         }
 
@@ -37,9 +45,11 @@ namespace API
             }
 
             // app.UseHttpsRedirection();
-
+            
             app.UseRouting();
             app.UseAuthorization();
+
+            app.UseCors("cors");
 
             app.UseEndpoints(endpoints =>
             {
